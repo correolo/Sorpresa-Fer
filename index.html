@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Para mi Fernanda ❤️</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        /* FONDO GENERAL */
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #ffe6e6;
+            color: #d63384;
+            text-align: center;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 15px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* CORAZONES FLOTANTES CONTINUOS DEL FONDO */
+        #fondo-animado {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1; pointer-events: none; overflow: hidden;
+        }
+        .corazon-bg {
+            position: absolute; bottom: -100px; opacity: 0.15;
+            animation: flotarFondo linear infinite;
+        }
+        @keyframes flotarFondo {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-120vh) rotate(360deg); }
+        }
+
+        /* BARRA DE PROGRESO */
+        #contenedor-progreso {
+            display: none; position: fixed; top: 0; left: 0; width: 100%;
+            background: rgba(255, 255, 255, 0.95); padding: 15px 20px;
+            border-radius: 0 0 20px 20px; box-shadow: 0 4px 15px rgba(214, 51, 132, 0.2);
+            z-index: 100; box-sizing: border-box;
+        }
+        #texto-progreso { font-size: 16px; font-weight: bold; margin: 0 0 10px 0; }
+        .barra-fondo { width: 100%; background: #eee; border-radius: 10px; height: 18px; overflow: hidden; }
+        .barra-relleno { width: 0%; background: linear-gradient(90deg, #ff4d4d, #ff8585); height: 100%; transition: width 0.2s ease; }
+
+        /* PANTALLAS */
+        .pantalla {
+            display: none; flex-direction: column; align-items: center;
+            padding: 30px 20px; background: rgba(255, 255, 255, 0.96);
+            border-radius: 25px; box-shadow: 0px 8px 25px rgba(214, 51, 132, 0.25);
+            width: 100%; max-width: 380px; z-index: 10; box-sizing: border-box; margin-top: 50px; 
+        }
+        .activa { display: flex; animation: aparecer 0.5s ease-in-out; }
+        @keyframes aparecer {
+            from { opacity: 0; transform: scale(0.93); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* TEXTOS Y BOTONES */
+        h1 { font-size: 30px; margin-bottom: 20px; line-height: 1.3; } 
+        h2 { font-size: 24px; margin-bottom: 15px; }
+        p { font-size: 18px; margin-bottom: 20px; line-height: 1.5; color: #555; }
+        button {
+            font-family: inherit; font-size: 19px; padding: 14px 25px; margin: 10px 0;
+            border: none; border-radius: 15px; cursor: pointer; transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 85%;
+        }
+        .btn-si { background-color: #ff4d4d; color: white; font-weight: bold; }
+        .btn-si:active { transform: scale(0.96); }
+        .btn-no { background-color: #cccccc; color: black; position: relative; }
+        input {
+            padding: 14px; font-size: 18px; border: 2px solid #ff4d4d;
+            border-radius: 12px; text-align: center; margin-bottom: 20px;
+            font-family: inherit; width: 85%; box-sizing: border-box;
+        }
+
+        /* CARRUSEL HORIZONTAL */
+        .carrusel-contenedor {
+            display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
+            width: 100%; gap: 15px; padding-bottom: 15px; scrollbar-width: none; 
+        }
+        .carrusel-contenedor::-webkit-scrollbar { display: none; }
+        .tarjeta-texto {
+            scroll-snap-align: center; flex: 0 0 100%; background: #fff0f5;
+            border-radius: 15px; padding: 30px 25px; box-sizing: border-box;
+            font-size: 20px; line-height: 1.6; color: #d63384;
+            border: 2px dashed #ffb3c6; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex; align-items: center; justify-content: center;
+            text-align: center; font-style: italic; height: 60vh; min-height: 400px; overflow-y: auto;
+        }
+
+        /* RASCA Y GANA */
+        .contenedor-rasca {
+            position: relative; width: 280px; height: 150px; margin: 20px 0;
+            border-radius: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        .texto-oculto {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #fff0f5; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; padding: 10px;
+            box-sizing: border-box; border: 2px dashed #ff4d4d; border-radius: 15px;
+        }
+        #scratch-canvas { position: absolute; top: 0; left: 0; cursor: pointer; touch-action: none; }
+
+        /* GALERÍA FINAL ANIMADA */
+        .galeria-asimetrica {
+            display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
+            width: 100%; padding: 10px 0; perspective: 1000px;
+        }
+        .galeria-asimetrica img {
+            border: 4px solid white; border-bottom: 12px solid white; 
+            box-shadow: 0 5px 12px rgba(0,0,0,0.2); border-radius: 4px;
+            object-fit: cover; aspect-ratio: 1 / 1;
+            animation: moverFoto infinite alternate ease-in-out;
+        }
+
+        @keyframes moverFoto {
+            0% { transform: translateY(0px) rotate(var(--rotacion-inicial)); }
+            100% { transform: translateY(-12px) rotate(calc(var(--rotacion-inicial) + 6deg)); }
+        }
+
+        .corazones-flotantes {
+            position: fixed; font-size: 30px; animation: flotarCelebracion linear infinite;
+            z-index: 999; pointer-events: none;
+        }
+        @keyframes flotarCelebracion {
+            0% { transform: translateY(100vh) scale(0.6); opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="fondo-animado"></div>
+
+    <audio id="musica-fondo" loop>
+        <source src="cancion.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="contenedor-progreso">
+        <p id="texto-progreso">Cargando el mejor año de mi vida... <span id="porcentaje">0%</span></p>
+        <div class="barra-fondo">
+            <div id="barra" class="barra-relleno"></div>
+        </div>
+    </div>
+
+    <div id="pantalla1" class="pantalla activa">
+        <h1>¿Quieres una cita muy especial conmigo? 💕</h1>
+        <button class="btn-si" onclick="iniciarExperiencia()">sisisi</button>
+        <button id="btn-no" class="btn-no" ontouchstart="moverBoton(event)" onmouseover="moverBoton(event)">noo</button>
+    </div>
+
+    <div id="pantalla2" class="pantalla">
+        <h1>¡Sabía que dirías que sí! 🥰</h1>
+        <p>Introduce la fecha en la que es nuestro aniversario para desbloquear la sorpresa (DD/MM/AA):</p>
+        <input type="text" id="fecha-input" placeholder="ej: 23/11/21">
+        <button class="btn-si" onclick="comprobarFecha()">Desbloquear</button>
+        <p id="error-fecha" style="color: red; display: none; font-size: 16px;">Esa no es la fecha... ¡piensa bien! 🥺</p>
+    </div>
+
+    <div id="pantalla3" class="pantalla" style="max-width: 95%;">
+        <h1 style="margin-top: 10px;">Razones por las que te quiero 💖</h1>
+        <div id="carrusel-tarjetas" class="carrusel-contenedor" onscroll="actualizarProgreso()"></div>
+        <button class="btn-si" id="btn-sorpresa" onclick="irASorpresa()" style="display:none; margin-top: 20px; width: 100%;">Ver mi sorpresa final... 🎁</button>
+    </div>
+
+    <div id="pantalla4" class="pantalla" style="margin-top: 0; max-width: 100%; background: rgba(255,255,255,0.9);">
+        <h1>🎉 ¡FELICIDADES! 🎉</h1>
+        <p style="font-weight: bold; margin: 0;">Cumpliste un año con tu PAPOOOI, se nota que os queréis mucho. ¡Rasca abajo! 👇</p>
+        
+        <div class="contenedor-rasca">
+            <div class="texto-oculto">
+                <span style="font-weight: bold; color: #cc0000; font-size: 16px; text-align: center;">
+                    UNA CENA EN CASA CARMEN DE LO MÁS ESPECIAL 🍝
+                </span>
+                <span style="font-size: 14px; color: #666; margin-top: 5px;">
+                    y alguna sorpresa más... 😉
+                </span>
+            </div>
+            <canvas id="scratch-canvas" width="280" height="150"></canvas>
+        </div>
+
+        <p style="font-size: 18px; margin: 15px 0;">¡Que lo disfrutes muchooo!</p>
+        
+        <div id="galeria-final" class="galeria-asimetrica"></div>
+    </div>
+
+    <script>
+        const textosTarjetas = [
+            "\"No hay nada más bello que el resplandor de tu mirada, esos ojos negros fueron los que me guiaron hasta tus labios...\"",
+            "\"Aunque pudieran por sí solos, no fueron el único motivo, la manera en la que te ves siendo tú, te aporta una esencia y una personalidad muy bonita y especial, que solo puedes tener tú, y que a muchos les gustaría replicar...\"",
+            "\"...sin olvidarnos de que esos labios, nariz, pecas... hacen un puzzle perfecto que encaja en tu cara, haciéndola verdaderamente bella, sin importar qué día sea, cómo estés o de cualquier forma, de 14 a 14 te has visto guapa todos y cada uno de los días, y así va a seguir siendo.\"",
+            "\"...contigo Fer cada momento a tu lado es como si este año en verdad se hubiera multiplicado x4, parece que nos conocemos de siempre, lo cual es contradictorio porque el tiempo a tu lado pasa demasiado rápido...\"",
+            "\"Y este año no solo he aprendido (y sigo aprendiendo) a tener una relación, sino miles de cosas más por las que te admiro, tu genialidad, tu competitividad, tus bromas, tu fuerza... y sí, también esos bíceps. Ser tú es lo más bonito que hay en ti...\"",
+            "\"...¡que nooo, que no solo es esooo! Me encanta tu sonrisa, tu carisma, tu forma de ver las cosas, la empatía, el apoyo que me das, la motivación que supones para mí, las ganas de aprender más sobre cómo llevar la relación, aprender más de ti, no rendirnos cuando las cosas se ponen mal, me gusta cómo te gusto, me gusta cómo me quieres, me gusta sentir cosas fuertes por ti, me gusta querer estar donde estoy, me gustas tú Fernanda...\"",
+            "\"...todo ese esquema que te compone que junto a ese cuerpazo de museo, de diosa y ese intelecto de enciclopedia... esos defectos imperfectamente perfectos... (refee refrenciaa) más una extensa lista, hacen de ti una creación perfecta...\""
+        ];
+
+        let autoScrollInterval;
+        let intervaloCorazones;
+
+        function crearFondoAnimado() {
+            const contenedor = document.getElementById('fondo-animado');
+            for(let i=0; i<20; i++) {
+                let corazon = document.createElement('div');
+                corazon.innerHTML = ['❤️', '💖', '💕'][Math.floor(Math.random() * 3)];
+                corazon.className = 'corazon-bg';
+                corazon.style.left = Math.floor(Math.random() * 90) + 5 + '%'; 
+                corazon.style.animationDuration = (Math.random() * 15 + 15) + 's';
+                corazon.style.animationDelay = (Math.random() * 15) + 's';
+                corazon.style.fontSize = (Math.random() * 30 + 35) + 'px';
+                contenedor.appendChild(corazon);
+            }
+        }
+        crearFondoAnimado();
+
+        function iniciarExperiencia() {
+            let audio = document.getElementById('musica-fondo');
+            audio.volume = 0.6;
+            audio.play().catch(e => console.log("El usuario no ha interactuado lo suficiente o el archivo no se llama cancion.mp3"));
+            siguientePantalla(2);
+        }
+
+        function moverBoton(e) {
+            e.preventDefault();
+            const btnNo = document.getElementById('btn-no');
+            const maxX = window.innerWidth - btnNo.offsetWidth - 30;
+            const maxY = window.innerHeight - btnNo.offsetHeight - 30;
+            btnNo.style.position = 'fixed';
+            btnNo.style.left = `${Math.max(15, Math.random() * maxX)}px`;
+            btnNo.style.top = `${Math.max(15, Math.random() * maxY)}px`;
+        }
+
+        function comprobarFecha() {
+            const fecha = document.getElementById('fecha-input').value.trim();
+            const error = document.getElementById('error-fecha');
+            if (fecha === '14/06/25') {
+                error.style.display = 'none';
+                document.getElementById('contenedor-progreso').style.display = 'block';
+                siguientePantalla(3);
+                cargarTarjetas();
+                iniciarAutoScroll();
+            } else {
+                error.style.display = 'block';
+            }
+        }
+
+        function cargarTarjetas() {
+            const contenedor = document.getElementById('carrusel-tarjetas');
+            textosTarjetas.forEach((texto) => {
+                const div = document.createElement('div');
+                div.className = 'tarjeta-texto';
+                div.innerHTML = `<span>${texto}</span>`;
+                contenedor.appendChild(div);
+            });
+            actualizarProgreso();
+        }
+
+        function iniciarAutoScroll() {
+            const carrusel = document.getElementById('carrusel-tarjetas');
+            autoScrollInterval = setInterval(() => {
+                carrusel.scrollBy({ left: carrusel.clientWidth, behavior: 'smooth' });
+                if (carrusel.scrollLeft + carrusel.clientWidth >= carrusel.scrollWidth - 10) clearInterval(autoScrollInterval);
+            }, 6000); 
+            carrusel.addEventListener('touchstart', () => clearInterval(autoScrollInterval));
+            carrusel.addEventListener('mousedown', () => clearInterval(autoScrollInterval));
+        }
+
+        function actualizarProgreso() {
+            const carrusel = document.getElementById('carrusel-tarjetas');
+            const scrollMax = carrusel.scrollWidth - carrusel.clientWidth;
+            let porcentaje = scrollMax > 0 ? Math.round((carrusel.scrollLeft / scrollMax) * 100) : 0;
+            porcentaje = Math.max(0, Math.min(100, porcentaje));
+            document.getElementById('barra').style.width = porcentaje + '%';
+            document.getElementById('porcentaje').innerText = porcentaje + '%';
+            if (porcentaje >= 98) document.getElementById('btn-sorpresa').style.display = 'block';
+        }
+
+        // SISTEMA INTELIGENTE DE CARGA DE FOTOS
+        function generarGaleriaAsimetrica() {
+            const galeria = document.getElementById('galeria-final');
+            for(let i = 1; i <= 30; i++) {
+                const img = document.createElement('img');
+                
+                // Intentará con todos estos nombres hasta que encuentre tu foto
+                const intentos = [
+                    `foto${i}.jpg`, 
+                    `foto${i}.JPG`, 
+                    `foto${i}.jpeg`, 
+                    `foto${i}.png`, 
+                    `foto${i}.jpg.jpg`,
+                    `foto${i}`
+                ];
+                let intentoActual = 0;
+
+                img.src = intentos[intentoActual];
+                
+                img.onerror = () => {
+                    intentoActual++;
+                    if(intentoActual < intentos.length) {
+                        img.src = intentos[intentoActual];
+                    } else {
+                        img.src = `https://via.placeholder.com/200/ffcccc/d63384?text=Foto+${i}`;
+                    }
+                };
+                
+                const rotacion = (Math.random() * 40) - 20; 
+                const ancho = (Math.random() * 20) + 30; 
+                const margenY = (Math.random() * 15) + 5; 
+                const margenX = (Math.random() * 10) - 5; 
+                
+                img.style.setProperty('--rotacion-inicial', `${rotacion}deg`);
+                img.style.width = `${ancho}%`;
+                img.style.margin = `${margenY}px ${margenX}px`;
+                
+                const duracionAnimacion = (Math.random() * 2 + 2); 
+                const retrasoAnimacion = (Math.random() * 2); 
+                
+                img.style.animationDuration = `${duracionAnimacion}s`;
+                img.style.animationDelay = `${retrasoAnimacion}s`;
+                
+                galeria.appendChild(img);
+            }
+        }
+
+        function irASorpresa() {
+            clearInterval(autoScrollInterval); 
+            document.getElementById('contenedor-progreso').style.display = 'none'; 
+            siguientePantalla(4);
+            inicializarRasca();
+            generarGaleriaAsimetrica(); 
+            lanzarConfetiFiesta();
+            intervaloCorazones = setInterval(crearCorazonCelebracion, 140);
+        }
+
+        function siguientePantalla(num) {
+            document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
+            document.getElementById(`pantalla${num}`).classList.add('activa');
+        }
+
+        function inicializarRasca() {
+            const canvas = document.getElementById('scratch-canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#d1d1d1'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#d63384'; ctx.font = 'bold 16px Comic Sans MS'; ctx.textAlign = 'center';
+            ctx.fillText('✨ Rasca aquí con tu dedo ✨', canvas.width / 2, canvas.height / 2 + 5);
+
+            let esRaspando = false;
+            function raspar(clientX, clientY) {
+                const rect = canvas.getBoundingClientRect();
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.beginPath(); ctx.arc(clientX - rect.left, clientY - rect.top, 22, 0, Math.PI * 2); ctx.fill();
+            }
+
+            canvas.addEventListener('mousedown', () => esRaspando = true);
+            canvas.addEventListener('mouseup', () => esRaspando = false);
+            canvas.addEventListener('mousemove', (e) => { if(esRaspando) raspar(e.clientX, e.clientY); });
+            canvas.addEventListener('touchstart', (e) => { esRaspando = true; raspar(e.touches[0].clientX, e.touches[0].clientY); });
+            canvas.addEventListener('touchend', () => esRaspando = false);
+            canvas.addEventListener('touchmove', (e) => { if(esRaspando) { e.preventDefault(); raspar(e.touches[0].clientX, e.touches[0].clientY); } }, {passive: false});
+        }
+
+        function lanzarConfetiFiesta() {
+            setInterval(function() {
+                confetti({ particleCount: 15, angle: 60, spread: 60, origin: { x: 0 }, colors: ['#ff0000', '#ff66b2', '#ffffff'] });
+                confetti({ particleCount: 15, angle: 120, spread: 60, origin: { x: 1 }, colors: ['#ff0000', '#ff66b2', '#ffffff'] });
+            }, 300);
+        }
+
+        function crearCorazonCelebracion() {
+            const corazon = document.createElement('div');
+            corazon.classList.add('corazones-flotantes');
+            corazon.innerHTML = ['❤️', '💖', '✨', '💕', '💘'][Math.floor(Math.random() * 5)];
+            corazon.style.left = Math.random() * 100 + 'vw';
+            corazon.style.animationDuration = Math.random() * 2 + 2 + 's';
+            document.body.appendChild(corazon);
+            setTimeout(() => corazon.remove(), 4000);
+        }
+    </script>
+</body>
+</html>
