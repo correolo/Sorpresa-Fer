@@ -42,8 +42,9 @@
 
     <div id="fondo-animado"></div>
 
+    <!-- CORREGIDO: cancion.mp3 ahora va estrictamente sin tilde -->
     <audio id="musica-fondo" loop>
-        <source src="canción.mp3" type="audio/mpeg">
+        <source src="cancion.mp3" type="audio/mpeg">
     </audio>
 
     <div id="contenedor-progreso">
@@ -118,7 +119,7 @@
         function iniciarExperiencia() {
             let audio = document.getElementById('musica-fondo');
             audio.volume = 0.6;
-            audio.play().catch(e => console.log("Audio esperando."));
+            audio.play().catch(e => console.log("Audio esperando interactuación."));
             siguientePantalla(2);
         }
 
@@ -160,7 +161,6 @@
             if (porcentaje >= 98) document.getElementById('btn-sorpresa').style.display = 'block';
         }
 
-        // AQUÍ HE AÑADIDO EL .jpg.jpeg PARA QUE ENCUENTRE TUS FOTOS EXACTAS
         function generarGaleriaAsimetrica() {
             const galeria = document.getElementById('galeria-final');
             for(let i = 1; i <= 30; i++) {
