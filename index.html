@@ -6,46 +6,65 @@
     <title>Para mi Fernanda ❤️</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        body { font-family: 'Comic Sans MS', cursive, sans-serif; background-color: #ffe6e6; color: #d63384; text-align: center; overflow-x: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; box-sizing: border-box; position: relative; }
+        /* CAMBIADO: Fuente Arial estricta para todo el documento */
+        body { font-family: 'Arial', 'Helvetica', sans-serif; background-color: #ffe6e6; color: #d63384; text-align: center; overflow-x: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; box-sizing: border-box; position: relative; }
         #fondo-animado { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; overflow: hidden; }
-        .corazon-bg { position: absolute; bottom: -100px; opacity: 0.15; animation: flotarFondo linear infinite; }
+        .corazon-bg { position: absolute; bottom: -100px; opacity: 0.12; animation: flotarFondo linear infinite; }
         @keyframes flotarFondo { 0% { transform: translateY(0) rotate(0deg); } 100% { transform: translateY(-120vh) rotate(360deg); } }
+        
+        /* Fotos dinámicas que flotan de fondo en el carrusel */
+        .foto-flotante-carrusel { position: fixed; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.15); border-radius: 4px; object-fit: cover; width: 110px; height: 110px; z-index: 1; pointer-events: none; opacity: 0; transform: scale(0.5); transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); animation: suaveVaiven 4s infinite alternate ease-in-out; }
+        .foto-flotante-carrusel.visible { opacity: 0.85; transform: scale(1) rotate(var(--r)); }
+        @keyframes suaveVaiven { 0% { transform: translateY(0px) rotate(var(--r)); } 100% { transform: translateY(-12px) rotate(calc(var(--r) + 8deg)); } }
+
         #contenedor-progreso { display: none; position: fixed; top: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.95); padding: 15px 20px; border-radius: 0 0 20px 20px; box-shadow: 0 4px 15px rgba(214, 51, 132, 0.2); z-index: 100; box-sizing: border-box; }
         #texto-progreso { font-size: 16px; font-weight: bold; margin: 0 0 10px 0; }
         .barra-fondo { width: 100%; background: #eee; border-radius: 10px; height: 18px; overflow: hidden; }
-        .barra-relleno { width: 0%; background: linear-gradient(90deg, #ff4d4d, #ff8585); height: 100%; transition: width 0.2s ease; }
+        .barra-relleno { width: 0%; background: linear-gradient(90deg, #ff4d4d, #ff8585); height: 100%; transition: width 0.3s ease; }
+        
         .pantalla { display: none; flex-direction: column; align-items: center; padding: 30px 20px; background: rgba(255, 255, 255, 0.96); border-radius: 25px; box-shadow: 0px 8px 25px rgba(214, 51, 132, 0.25); width: 100%; max-width: 380px; z-index: 10; box-sizing: border-box; margin-top: 50px; }
-        .activa { display: flex; animation: aparecer 0.5s ease-in-out; }
-        @keyframes aparecer { from { opacity: 0; transform: scale(0.93); } to { opacity: 1; transform: scale(1); } }
-        h1 { font-size: 30px; margin-bottom: 20px; line-height: 1.3; } 
-        h2 { font-size: 24px; margin-bottom: 15px; }
-        p { font-size: 18px; margin-bottom: 20px; line-height: 1.5; color: #555; }
-        button { font-family: inherit; font-size: 19px; padding: 14px 25px; margin: 10px 0; border: none; border-radius: 15px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 85%; }
-        .btn-si { background-color: #ff4d4d; color: white; font-weight: bold; }
+        .activa { display: flex; animation: abrirPantalla 0.5s ease-in-out; }
+        @keyframes abrirPantalla { from { opacity: 0; transform: scale(0.93); } to { opacity: 1; transform: scale(1); } }
+        
+        /* Ajustes tipográficos Arial modernos */
+        h1 { font-size: 28px; font-weight: 700; margin-bottom: 20px; line-height: 1.3; letter-spacing: -0.5px; } 
+        p { font-size: 17px; font-weight: 400; margin-bottom: 20px; line-height: 1.5; color: #555; }
+        button { font-family: inherit; font-size: 18px; font-weight: 700; padding: 14px 25px; margin: 10px 0; border: none; border-radius: 15px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 85%; letter-spacing: -0.3px; }
+        .btn-si { background-color: #ff4d4d; color: white; }
         .btn-si:active { transform: scale(0.96); }
         .btn-no { background-color: #cccccc; color: black; position: relative; }
-        input { padding: 14px; font-size: 18px; border: 2px solid #ff4d4d; border-radius: 12px; text-align: center; margin-bottom: 20px; font-family: inherit; width: 85%; box-sizing: border-box; }
-        .carrusel-contenedor { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; width: 100%; gap: 15px; padding-bottom: 15px; scrollbar-width: none; }
+        input { padding: 14px; font-size: 18px; border: 2px solid #ff4d4d; border-radius: 12px; text-align: center; margin-bottom: 20px; font-family: inherit; width: 85%; box-sizing: border-box; font-weight: bold; }
+        
+        .carrusel-contenedor { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; width: 100%; gap: 15px; padding-bottom: 15px; scrollbar-width: none; position: relative; z-index: 2; }
         .carrusel-contenedor::-webkit-scrollbar { display: none; }
-        .tarjeta-texto { scroll-snap-align: center; flex: 0 0 100%; background: #fff0f5; border-radius: 15px; padding: 30px 25px; box-sizing: border-box; font-size: 20px; line-height: 1.6; color: #d63384; border: 2px dashed #ffb3c6; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; text-align: center; font-style: italic; height: 60vh; min-height: 400px; overflow-y: auto; }
+        .tarjeta-texto { scroll-snap-align: center; flex: 0 0 100%; background: rgba(255, 240, 245, 0.92); border-radius: 15px; padding: 30px 25px; box-sizing: border-box; font-size: 19px; font-weight: bold; line-height: 1.6; color: #d63384; border: 2px dashed #ffb3c6; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; text-align: center; height: 50vh; min-height: 360px; overflow-y: auto; }
+        
         .contenedor-rasca { position: relative; width: 280px; height: 150px; margin: 20px 0; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
         .texto-oculto { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #fff0f5; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 10px; box-sizing: border-box; border: 2px dashed #ff4d4d; border-radius: 15px; }
         #scratch-canvas { position: absolute; top: 0; left: 0; cursor: pointer; touch-action: none; }
+        
         .galeria-asimetrica { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; width: 100%; padding: 10px 0; perspective: 1000px; }
         .galeria-asimetrica img { border: 4px solid white; border-bottom: 12px solid white; box-shadow: 0 5px 12px rgba(0,0,0,0.2); border-radius: 4px; object-fit: cover; aspect-ratio: 1 / 1; animation: moverFoto infinite alternate ease-in-out; }
         @keyframes moverFoto { 0% { transform: translateY(0px) rotate(var(--rotacion-inicial)); } 100% { transform: translateY(-12px) rotate(calc(var(--rotacion-inicial) + 6deg)); } }
         .corazones-flotantes { position: fixed; font-size: 30px; animation: flotarCelebracion linear infinite; z-index: 999; pointer-events: none; }
         @keyframes flotarCelebracion { 0% { transform: translateY(100vh) scale(0.6); opacity: 1; } 100% { transform: translateY(-10vh) scale(1.5); opacity: 0; } }
+        
+        #yt-player-container { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; left: -9999px; }
     </style>
 </head>
 <body>
 
     <div id="fondo-animado"></div>
+    
+    <!-- Contenedores para las fotos sorpresa del carrusel -->
+    <img id="f-flotante-1" class="foto-flotante-carrusel" style="top: 15%; left: 8%; --r: -12deg;" src="" alt="">
+    <img id="f-flotante-2" class="foto-flotante-carrusel" style="top: 60%; right: 5%; --r: 15deg;" src="" alt="">
+    <img id="f-flotante-3" class="foto-flotante-carrusel" style="top: 20%; right: 8%; --r: -8deg;" src="" alt="">
 
-    <!-- CORREGIDO: cancion.mp3 ahora va estrictamente sin tilde -->
-    <audio id="musica-fondo" loop>
-        <source src="cancion.mp3" type="audio/mpeg">
-    </audio>
+    <!-- REPRODUCTOR INVISIBLE DE YOUTUBE -->
+    <div id="yt-player-container">
+        <div id="player"></div>
+    </div>
 
     <div id="contenedor-progreso">
         <p id="texto-progreso">Cargando el mejor año de mi vida... <span id="porcentaje">0%</span></p>
@@ -67,7 +86,7 @@
     </div>
 
     <div id="pantalla3" class="pantalla" style="max-width: 95%;">
-        <h1 style="margin-top: 10px;">Razones por las que te quiero 💖</h1>
+        <h1 style="margin-top: 10px; font-size: 26px;">Razones por las que te quiero 💖</h1>
         <div id="carrusel-tarjetas" class="carrusel-contenedor" onscroll="actualizarProgreso()"></div>
         <button class="btn-si" id="btn-sorpresa" onclick="irASorpresa()" style="display:none; margin-top: 20px; width: 100%;">Ver mi sorpresa final... 🎁</button>
     </div>
@@ -89,6 +108,24 @@
     </div>
 
     <script>
+        // API de YouTube
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        var player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '1',
+                width: '1',
+                videoId: 'O2-ISn31_DY',
+                playerVars: { 'autoplay': 0, 'controls': 0, 'loop': 1, 'playlist': 'O2-ISn31_DY' },
+                events: { 'onReady': onPlayerReady }
+            });
+        }
+        function onPlayerReady(event) { player.setVolume(60); }
+
         const textosTarjetas = [
             "\"No hay nada más bello que el resplandor de tu mirada, esos ojos negros fueron los que me guiaron hasta tus labios...\"",
             "\"Aunque pudieran por sí solos, no fueron el único motivo, la manera en la que te ves siendo tú, te aporta una esencia y una personalidad muy bonita y especial, que solo puedes tener tú, y que a muchos les gustaría replicar...\"",
@@ -100,6 +137,7 @@
         ];
 
         let autoScrollInterval; let intervaloCorazones;
+        let ultimaTarjetaIndex = -1;
 
         function crearFondoAnimado() {
             const contenedor = document.getElementById('fondo-animado');
@@ -117,9 +155,7 @@
         crearFondoAnimado();
 
         function iniciarExperiencia() {
-            let audio = document.getElementById('musica-fondo');
-            audio.volume = 0.6;
-            audio.play().catch(e => console.log("Audio esperando interactuación."));
+            if (player && typeof player.playVideo === 'function') { player.playVideo(); }
             siguientePantalla(2);
         }
 
@@ -135,6 +171,7 @@
             if (fecha === '14/06/25') {
                 error.style.display = 'none'; document.getElementById('contenedor-progreso').style.display = 'block';
                 siguientePantalla(3); cargarTarjetas(); iniciarAutoScroll();
+                lanzarFotosSorpresa();
             } else { error.style.display = 'block'; }
         }
 
@@ -158,12 +195,47 @@
             let porcentaje = scrollMax > 0 ? Math.round((carrusel.scrollLeft / scrollMax) * 100) : 0;
             porcentaje = Math.max(0, Math.min(100, porcentaje));
             document.getElementById('barra').style.width = porcentaje + '%'; document.getElementById('porcentaje').innerText = porcentaje + '%';
-            if (porcentaje >= 98) document.getElementById('btn-sorpresa').style.display = 'block';
+            
+            let indiceTarjeta = Math.round(carrusel.scrollLeft / carrusel.clientWidth);
+            if (indiceTarjeta !== ultimaTarjetaIndex && porcentaje < 98) {
+                ultimaTarjetaIndex = indiceTarjeta;
+                lanzarFotosSorpresa();
+            }
+
+            if (porcentaje >= 98) {
+                document.getElementById('btn-sorpresa').style.display = 'block';
+                ocultarFotosSorpresa();
+            }
+        }
+
+        function lanzarFotosSorpresa() {
+            ocultarFotosSorpresa();
+            setTimeout(() => {
+                let numerosDisponibles = Array.from({length: 35}, (_, i) => i + 1);
+                let elegidas = [];
+                for(let k=0; k<3; k++) {
+                    let indexAleatorio = Math.floor(Math.random() * numerosDisponibles.length);
+                    elegidas.push(numerosDisponibles.splice(indexAleatorio, 1)[0]);
+                }
+                const formatosValidos = (n) => `foto${n}.jpg.jpeg`;
+                for(let idx = 1; idx <= 3; idx++) {
+                    let imgEl = document.getElementById(`f-flotante-${idx}`);
+                    imgEl.src = formatosValidos(elegidas[idx-1]);
+                    imgEl.style.setProperty('--r', `${(Math.random() * 30) - 15}deg`);
+                    imgEl.classList.add('visible');
+                }
+            }, 200);
+        }
+
+        function ocultarFotosSorpresa() {
+            for(let idx = 1; idx <= 3; idx++) {
+                document.getElementById(`f-flotante-${idx}`).classList.remove('visible');
+            }
         }
 
         function generarGaleriaAsimetrica() {
             const galeria = document.getElementById('galeria-final');
-            for(let i = 1; i <= 30; i++) {
+            for(let i = 1; i <= 35; i++) {
                 const img = document.createElement('img');
                 const intentos = [
                     `foto${i}.jpg.jpeg`, 
@@ -192,17 +264,19 @@
 
         function irASorpresa() {
             clearInterval(autoScrollInterval); document.getElementById('contenedor-progreso').style.display = 'none'; 
+            ocultarFotosSorpresa();
             siguientePantalla(4); inicializarRasca(); generarGaleriaAsimetrica(); lanzarConfetiFiesta();
             intervaloCorazones = setInterval(crearCorazonCelebracion, 140);
         }
 
         function siguientePantalla(num) { document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa')); document.getElementById(`pantalla${num}`).classList.add('activa'); }
 
+        /* CAMBIADO: Fuente Arial estricta para el Canvas del Rasca */
         function inicializarRasca() {
             const canvas = document.getElementById('scratch-canvas'); const ctx = canvas.getContext('2d');
             ctx.fillStyle = '#d1d1d1'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#d63384'; ctx.font = 'bold 16px Comic Sans MS'; ctx.textAlign = 'center';
-            ctx.fillText('✨ Rasca aquí con tu dedo ✨', canvas.width / 2, canvas.height / 2 + 5);
+            ctx.fillStyle = '#d63384'; ctx.font = 'bold 16px Arial'; ctx.textBaseline = 'middle'; ctx.textAlign = 'center';
+            ctx.fillText('✨ Rasca aquí con tu dedo ✨', canvas.width / 2, canvas.height / 2);
             let esRaspando = false;
             function raspar(clientX, clientY) { const rect = canvas.getBoundingClientRect(); ctx.globalCompositeOperation = 'destination-out'; ctx.beginPath(); ctx.arc(clientX - rect.left, clientY - rect.top, 22, 0, Math.PI * 2); ctx.fill(); }
             canvas.addEventListener('mousedown', () => esRaspando = true); canvas.addEventListener('mouseup', () => esRaspando = false);
