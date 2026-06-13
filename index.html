@@ -6,13 +6,11 @@
     <title>Para mi Fernanda ❤️</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        /* CAMBIADO: Fuente Arial estricta para todo el documento */
         body { font-family: 'Arial', 'Helvetica', sans-serif; background-color: #ffe6e6; color: #d63384; text-align: center; overflow-x: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; box-sizing: border-box; position: relative; }
         #fondo-animado { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; overflow: hidden; }
         .corazon-bg { position: absolute; bottom: -100px; opacity: 0.12; animation: flotarFondo linear infinite; }
         @keyframes flotarFondo { 0% { transform: translateY(0) rotate(0deg); } 100% { transform: translateY(-120vh) rotate(360deg); } }
         
-        /* Fotos dinámicas que flotan de fondo en el carrusel */
         .foto-flotante-carrusel { position: fixed; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.15); border-radius: 4px; object-fit: cover; width: 110px; height: 110px; z-index: 1; pointer-events: none; opacity: 0; transform: scale(0.5); transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); animation: suaveVaiven 4s infinite alternate ease-in-out; }
         .foto-flotante-carrusel.visible { opacity: 0.85; transform: scale(1) rotate(var(--r)); }
         @keyframes suaveVaiven { 0% { transform: translateY(0px) rotate(var(--r)); } 100% { transform: translateY(-12px) rotate(calc(var(--r) + 8deg)); } }
@@ -26,7 +24,6 @@
         .activa { display: flex; animation: abrirPantalla 0.5s ease-in-out; }
         @keyframes abrirPantalla { from { opacity: 0; transform: scale(0.93); } to { opacity: 1; transform: scale(1); } }
         
-        /* Ajustes tipográficos Arial modernos */
         h1 { font-size: 28px; font-weight: 700; margin-bottom: 20px; line-height: 1.3; letter-spacing: -0.5px; } 
         p { font-size: 17px; font-weight: 400; margin-bottom: 20px; line-height: 1.5; color: #555; }
         button { font-family: inherit; font-size: 18px; font-weight: 700; padding: 14px 25px; margin: 10px 0; border: none; border-radius: 15px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 85%; letter-spacing: -0.3px; }
@@ -39,16 +36,20 @@
         .carrusel-contenedor::-webkit-scrollbar { display: none; }
         .tarjeta-texto { scroll-snap-align: center; flex: 0 0 100%; background: rgba(255, 240, 245, 0.92); border-radius: 15px; padding: 30px 25px; box-sizing: border-box; font-size: 19px; font-weight: bold; line-height: 1.6; color: #d63384; border: 2px dashed #ffb3c6; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; text-align: center; height: 50vh; min-height: 360px; overflow-y: auto; }
         
-        .contenedor-rasca { position: relative; width: 280px; height: 150px; margin: 20px 0; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .contenedor-rasca { position: relative; width: 280px; height: 150px; margin: 20px 0; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.15); z-index: 10; }
         .texto-oculto { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #fff0f5; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 10px; box-sizing: border-box; border: 2px dashed #ff4d4d; border-radius: 15px; }
         #scratch-canvas { position: absolute; top: 0; left: 0; cursor: pointer; touch-action: none; }
         
-        .galeria-asimetrica { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; width: 100%; padding: 10px 0; perspective: 1000px; }
+        .galeria-asimetrica { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; width: 100%; padding: 10px 0; perspective: 1000px; z-index: 5; position: relative; }
         .galeria-asimetrica img { border: 4px solid white; border-bottom: 12px solid white; box-shadow: 0 5px 12px rgba(0,0,0,0.2); border-radius: 4px; object-fit: cover; aspect-ratio: 1 / 1; animation: moverFoto infinite alternate ease-in-out; }
         @keyframes moverFoto { 0% { transform: translateY(0px) rotate(var(--rotacion-inicial)); } 100% { transform: translateY(-12px) rotate(calc(var(--rotacion-inicial) + 6deg)); } }
         .corazones-flotantes { position: fixed; font-size: 30px; animation: flotarCelebracion linear infinite; z-index: 999; pointer-events: none; }
         @keyframes flotarCelebracion { 0% { transform: translateY(100vh) scale(0.6); opacity: 1; } 100% { transform: translateY(-10vh) scale(1.5); opacity: 0; } }
         
+        /* Estilos para los GIFs locos del rasca */
+        .gif-rasca { position: fixed; width: 85px; height: auto; z-index: 1000; pointer-events: none; opacity: 0; animation: popGif 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes popGif { 0% { opacity: 0; transform: scale(0) rotate(0deg); } 100% { opacity: 1; transform: scale(1) rotate(var(--giro)); } }
+
         #yt-player-container { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; left: -9999px; }
     </style>
 </head>
@@ -56,12 +57,10 @@
 
     <div id="fondo-animado"></div>
     
-    <!-- Contenedores para las fotos sorpresa del carrusel -->
     <img id="f-flotante-1" class="foto-flotante-carrusel" style="top: 15%; left: 8%; --r: -12deg;" src="" alt="">
     <img id="f-flotante-2" class="foto-flotante-carrusel" style="top: 60%; right: 5%; --r: 15deg;" src="" alt="">
     <img id="f-flotante-3" class="foto-flotante-carrusel" style="top: 20%; right: 8%; --r: -8deg;" src="" alt="">
 
-    <!-- REPRODUCTOR INVISIBLE DE YOUTUBE -->
     <div id="yt-player-container">
         <div id="player"></div>
     </div>
@@ -97,8 +96,8 @@
         
         <div class="contenedor-rasca">
             <div class="texto-oculto">
-                <span style="font-weight: bold; color: #cc0000; font-size: 16px; text-align: center;">UNA CENA EN CASA CARMEN DE LO MÁS ESPECIAL 🍝</span>
-                <span style="font-size: 14px; color: #666; margin-top: 5px;">y alguna sorpresa más... 😉</span>
+                <span style="font-weight: bold; color: #cc0000; font-size: 16px; text-align: center;">Un paseito en barco por el río y una cena con tu mijitooo 🚤🍝</span>
+                <span style="font-size: 14px; color: #666; margin-top: 5px;">(el paseito a las 19:50 en el muelle de san Telmo y la cena a las 21:50)</span>
             </div>
             <canvas id="scratch-canvas" width="280" height="150"></canvas>
         </div>
@@ -108,7 +107,6 @@
     </div>
 
     <script>
-        // API de YouTube
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -117,9 +115,7 @@
         var player;
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
-                height: '1',
-                width: '1',
-                videoId: 'O2-ISn31_DY',
+                height: '1', width: '1', videoId: 'O2-ISn31_DY',
                 playerVars: { 'autoplay': 0, 'controls': 0, 'loop': 1, 'playlist': 'O2-ISn31_DY' },
                 events: { 'onReady': onPlayerReady }
             });
@@ -127,13 +123,14 @@
         function onPlayerReady(event) { player.setVolume(60); }
 
         const textosTarjetas = [
-            "\"No hay nada más bello que el resplandor de tu mirada, esos ojos negros fueron los que me guiaron hasta tus labios...\"",
-            "\"Aunque pudieran por sí solos, no fueron el único motivo, la manera en la que te ves siendo tú, te aporta una esencia y una personalidad muy bonita y especial, que solo puedes tener tú, y que a muchos les gustaría replicar...\"",
-            "\"...sin olvidarnos de que esos labios, nariz, pecas... hacen un puzzle perfecto que encaja en tu cara, haciéndola verdaderamente bella, sin importar qué día sea, cómo estés o de cualquier forma, de 14 a 14 te has visto guapa todos y cada uno de los días, y así va a seguir siendo.\"",
-            "\"...contigo Fer cada momento a tu lado es como si este año en verdad se hubiera multiplicado x4, parece que nos conocemos de siempre, lo cual es contradictorio porque el tiempo a tu lado pasa demasiado rápido...\"",
-            "\"Y este año no solo he aprendido (y sigo aprendiendo) a tener una relación, sino miles de cosas más por las que te admiro, tu genialidad, tu competitividad, tus bromas, tu fuerza... y sí, también esos bíceps. Ser tú es lo más bonito que hay en ti...\"",
-            "\"...¡que nooo, que no solo es esooo! Me encanta tu sonrisa, tu carisma, tu forma de ver las cosas, la empatía, el apoyo que me das, la motivación que supones para mí, las ganas de aprender más sobre cómo llevar la relación, aprender más de ti, no rendirnos cuando las cosas se ponen mal, me gusta cómo te gusto, me gusta cómo me quieres, me gusta sentir cosas fuertes por ti, me gusta querer estar donde estoy, me gustas tú Fernanda...\"",
-            "\"...todo ese esquema que te compone que junto a ese cuerpazo de museo, de diosa y ese intelecto de enciclopedia... esos defectos imperfectamente perfectos... (refee refrenciaa) más una extensa lista, hacen de ti una creación perfecta...\""
+            "\"No hay nada más bello que ese resplandor de tu mirada, no fueron únicamente esos bonitos ojos negros los que me cautivaron...\"",
+            "\"aunque pudieran por sí solos, la manera en la que te ves siendo tú, hace de tu personalidad de lo más bonita y única, lacuál solo puedes tener tú, y que a muchos les gustaría replicar...\"",
+            "\"...sin olvidarnos de que esos labios, nariz, pecas... hacen un puzzle perfecto que encaja en tu cara, haciéndola verdaderamente bella, sin importar qué día sea o cómo estés, de 14 a 14 te has visto preciosa todos y cada uno de los días...\"",
+            "\"...contigo Fer cada momento a tu lado se ha sentido como este año hubiera sido mucho más, como si ya nos conociéramos de otra vida, lo cual es contradictorio porque el tiempo a tu lado pasa demasiado rápido...\"",
+            "\"Y este año no solo estoy aprendiendo a tener una relación, sino miles de cosas más por las que te admiro, tu genialidad, tu competitividad, tus bromas, tu fuerza... y sí, también esos bíceps. Ser tú es lo más bonito que hay en ti...\"",
+            "\"... y nooo no solo eso. Me encanta tu sonrisa, tu carisma, tu forma de ver las cosas, la empatía, el apoyo que me das, la motivación que supones para mí, las ganas de aprender...\"",
+            "\"...aprender más de ti, no rendirnos cuando las cosas se ponen mal, me gusta cómo te gusto, me gusta cómo me quieres, me gusta sentir cosas fuertes por ti, me gusta querer estar donde estoy, me gustas tú Fernanda...\"",
+            "\"...todo ese esquema que te compone que junto a ese cuerpazo de museo y ese intelecto de enciclopedia... más una extensa lista, hacen de ti una creación perfecta...\""
         ];
 
         let autoScrollInterval; let intervaloCorazones;
@@ -228,24 +225,14 @@
         }
 
         function ocultarFotosSorpresa() {
-            for(let idx = 1; idx <= 3; idx++) {
-                document.getElementById(`f-flotante-${idx}`).classList.remove('visible');
-            }
+            for(let idx = 1; idx <= 3; idx++) { document.getElementById(`f-flotante-${idx}`).classList.remove('visible'); }
         }
 
         function generarGaleriaAsimetrica() {
             const galeria = document.getElementById('galeria-final');
             for(let i = 1; i <= 35; i++) {
                 const img = document.createElement('img');
-                const intentos = [
-                    `foto${i}.jpg.jpeg`, 
-                    `foto${i}.jpg`, 
-                    `foto${i}.JPG`, 
-                    `foto${i}.jpeg`, 
-                    `foto${i}.png`, 
-                    `foto${i}.jpg.jpg`,
-                    `foto${i}`
-                ];
+                const intentos = [ `foto${i}.jpg.jpeg`, `foto${i}.jpg`, `foto${i}.JPG`, `foto${i}.jpeg`, `foto${i}.png`, `foto${i}.jpg.jpg`, `foto${i}` ];
                 let intentoActual = 0;
                 img.src = intentos[intentoActual];
                 img.onerror = () => {
@@ -271,14 +258,38 @@
 
         function siguientePantalla(num) { document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa')); document.getElementById(`pantalla${num}`).classList.add('activa'); }
 
-        /* CAMBIADO: Fuente Arial estricta para el Canvas del Rasca */
+        let gifsYaMostrados = false;
+        function mostrarGifsLocos() {
+            const gifsNombres = [
+                "Jake Adventure Time GIF - Jake Adventure Time Dancing - Discover & Share GIFs.gif",
+                "descarga.gif",
+                "« One Shots_ __ Camren ».gif",
+                "👍.jfif"
+            ];
+            
+            gifsNombres.forEach(nombre => {
+                let gifImg = document.createElement('img');
+                gifImg.src = nombre;
+                gifImg.className = 'gif-rasca';
+                gifImg.style.top = Math.floor(Math.random() * 75 + 5) + '%';
+                gifImg.style.left = Math.floor(Math.random() * 75 + 5) + '%';
+                gifImg.style.setProperty('--giro', `${(Math.random() * 40) - 20}deg`);
+                document.body.appendChild(gifImg);
+            });
+        }
+
         function inicializarRasca() {
             const canvas = document.getElementById('scratch-canvas'); const ctx = canvas.getContext('2d');
             ctx.fillStyle = '#d1d1d1'; ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = '#d63384'; ctx.font = 'bold 16px Arial'; ctx.textBaseline = 'middle'; ctx.textAlign = 'center';
             ctx.fillText('✨ Rasca aquí con tu dedo ✨', canvas.width / 2, canvas.height / 2);
             let esRaspando = false;
-            function raspar(clientX, clientY) { const rect = canvas.getBoundingClientRect(); ctx.globalCompositeOperation = 'destination-out'; ctx.beginPath(); ctx.arc(clientX - rect.left, clientY - rect.top, 22, 0, Math.PI * 2); ctx.fill(); }
+            
+            function raspar(clientX, clientY) { 
+                if(!gifsYaMostrados) { gifsYaMostrados = true; mostrarGifsLocos(); }
+                const rect = canvas.getBoundingClientRect(); ctx.globalCompositeOperation = 'destination-out'; ctx.beginPath(); ctx.arc(clientX - rect.left, clientY - rect.top, 22, 0, Math.PI * 2); ctx.fill(); 
+            }
+            
             canvas.addEventListener('mousedown', () => esRaspando = true); canvas.addEventListener('mouseup', () => esRaspando = false);
             canvas.addEventListener('mousemove', (e) => { if(esRaspando) raspar(e.clientX, e.clientY); });
             canvas.addEventListener('touchstart', (e) => { esRaspando = true; raspar(e.touches[0].clientX, e.touches[0].clientY); });
